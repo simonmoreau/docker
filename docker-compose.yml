@@ -15,28 +15,29 @@ services:
     volumes:
       - app-data:/var/www/akaunting
     restart: unless-stopped
+    depends_on:
+      - db
 
   db:
-    image: mysql:latest
+    image: hypriot/rpi-mysql
     volumes:
       - db-data:/var/lib/mysql
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: akaunting_root_password
       MYSQL_DATABASE: akaunting_db
       MYSQL_USER: akaunting_admin
       MYSQL_PASSWORD: akaunting_password
-    command: --default-authentication-plugin=mysql_native_password
 
+  # fix_permissions:
+  #   build: ./php
+  #   command: chown -R www-data:www-data /var/www/akaunting
+  #   volumes:
+  #     - app-data:/var/www/akaunting
+  #   depends_on:
+  #     - php
 
-#    image: postgres:alpine
-#    volumes:
-#      - db-data:/var/lib/postgresql/data
-#    environment:
-#      POSTGRES_DB: akaunting_db
-#      POSTGRES_USER: akaunting_admin
-#      POSTGRES_PASSWORD: akaunting_password
-#    ports:
-#        - "5432:5432"
+#   wpsite:
 volumes:
   app-data:
   db-data:
