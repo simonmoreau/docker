@@ -4,14 +4,11 @@ services:
 
   akaunting:
     container_name: akaunting
-    image: docker.io/akaunting/akaunting:latest
     build:
+      dockerfile: fpm.Dockerfile
       context: .
-    ports:
-      - 8080:80
     volumes:
-      - akaunting-data:/var/www/html/storage
-      - akaunting-modules:/var/www/html/modules
+      - akaunting-data:/var/www/html
     restart: unless-stopped
     env_file:
       - env/run.env
@@ -19,6 +16,16 @@ services:
       - AKAUNTING_SETUP
     depends_on:
       - akaunting-db
+
+  akaunting-proxy:
+    image: nginx:1.19.0
+    ports:
+      - 8080:80
+    depends_on:
+      - akaunting
+    volumes:
+      - akaunting-data:/var/www/html
+      - ./nginx/templates:/etc/nginx/templates
 
   akaunting-db:
     container_name: akaunting-db
@@ -29,13 +36,6 @@ services:
     env_file:
       - env/db.env
 
-  akaunting-update:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --cleanup akaunting akaunting-db
-
 volumes:
   akaunting-data:
-  akaunting-modules:
   akaunting-db:
