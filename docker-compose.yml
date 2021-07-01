@@ -22,7 +22,7 @@ services:
 
   akaunting-db:
     container_name: akaunting-db
-    image: mariadb
+    image: linuxserver/mariadb
     volumes:
       - akaunting-db:/var/lib/mysql
     restart: unless-stopped
